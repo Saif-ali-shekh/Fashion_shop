@@ -34,7 +34,8 @@ class Query(graphene.ObjectType):
     All_ProductImages =graphene.List(ProductImageType)
     All_DesignImages =graphene.List(DesignImageType)
     ####targrt by id 
-    User_ID =graphene.Field(CustomBaseUserType, User_ID =graphene.Int(required=True))
+    # User_ID =graphene.Field(CustomBaseUserType, id=graphene.Int(), slug=graphene.String())
+    user = graphene.Field(CustomBaseUserType, search=graphene.String(required=True))
     Customer_ID = graphene.Field(CustomerType, Customer_ID=Int(required=True))
     Design_ID = graphene.Field(DesignsType, Design_ID=Int(required=True))
     Product_ID = graphene.Field(ThreadsProductsType, Product_ID=Int(required=True))
@@ -57,14 +58,41 @@ class Query(graphene.ObjectType):
     def resolve_All_DesignImages(self, request):
          return DesignImage.objects.all() 
      #####by id 
-    def resolve_User_ID(self, request, User_ID):
-        try:
-            if not isinstance(User_ID, int):
-                raise GraphQLError("Invalid ID: ID must be an integer.")
-            user=CustomBaseUser.objects.get(id=User_ID) 
-            return user
-        except Exception as e:
-            raise  GraphQLError(f"user_id {User_ID} not found")
+    # def resolve_User_ID(self, request, id=None, slug=None):
+    #     try:
+    #         # if not isinstance(User_ID, int):
+    #         #     raise GraphQLError("Invalid ID: ID must be an integer.")
+    #         # user=CustomBaseUser.objects.get(id=User_ID) 
+    #         # return user
+    #         if id is not None:
+    #             try:
+    #                 return CustomBaseUser.objects.get(pk=id)
+    #             except CustomBaseUser.DoesNotExist:
+    #                 return None
+    #         elif slug is not None:
+    #             try:
+    #                 return CustomBaseUser.objects.get(slug_field=slug)
+    #             except CustomBaseUser.DoesNotExist:
+    #                 return None
+    #         else:
+    #             raise Exception("You must provide either an 'id' or a 'slug'")
+    #     except Exception as e:
+    #         raise  GraphQLError(f"user not found")
+    
+    def resolve_user(self, info, search):
+        print(search.isdigit())
+        if search.isdigit():
+            # Search by id
+            try:
+                return CustomBaseUser.objects.get(pk=int(search))
+            except CustomBaseUser.DoesNotExist:
+                return None
+        else: 
+            # Search by slug
+            try:
+                return CustomBaseUser.objects.get(slug_field=search)
+            except CustomBaseUser.DoesNotExist:
+                return None
     def resolve_Customer_ID(self, info, Customer_ID):
         if not isinstance(Customer_ID, int):
             raise GraphQLError("Invalid ID: ID must be an integer.")

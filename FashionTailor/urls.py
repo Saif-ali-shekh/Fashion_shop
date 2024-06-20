@@ -20,6 +20,7 @@ from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 from shop.schema import schema
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +28,4 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
     
-]
+]+staticfiles_urlpatterns()

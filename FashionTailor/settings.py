@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-z5yicv_ukgn)jq960y-ubs=k4m8n0uku=t50##=4-al$xan4vr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -81,11 +81,24 @@ WSGI_APPLICATION = 'FashionTailor.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+import dj_database_url
+import os
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default='postgres://username:password@hostname:port/dbname'
+#     )
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+"default": dj_database_url.parse(os. environ.get("DATABASE_URL"))
 }
 AUTH_USER_MODEL = 'App_Models.CustomBaseUser' 
 
