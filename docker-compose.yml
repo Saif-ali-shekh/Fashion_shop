@@ -1,0 +1,28 @@
+# docker-compose.yml
+
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Optionally, specify a new image name with tag
+      # image: fashiontailor-web:v2  ot work for cretate new image 
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=django-insecure-z5yicv_ukgn)jq960y-ubs=k4m8n0uku=t50##=4-al$xan4vr
+      - DATABASE_URL=postgres://fashion_postgres_user:ZDZjy7qYxfaiB6GkoUdPVoXaa2R0gyyn@dpg-cppsak88fa8c739l9fqg-a.oregon-postgres.render.com/fashion_postgres
+    # volumes:
+    #   - .:/code   # Mount local directory to /code in container
+    depends_on:
+      - db
+
+  db:
+    container_name: postgres_fashion_tailor_v2
+    image: postgres:latest  
+    environment:
+      - POSTGRES_DB=fashion_postgres
+      - POSTGRES_USER=fashion_postgres_user
+      - POSTGRES_PASSWORD=ZDZjy7qYxfaiB6GkoUdPVoXaa2R0gyyn

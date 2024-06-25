@@ -47,17 +47,18 @@ class CustomBaseUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
     
-    def save(self, *args,**kwargs):
-        super().save( *args,**kwargs)
+    def save(self, *args, **kwargs):
         if not self.slug_field:
-            base_slug= slugify(self.name) if self.name else slugify(self.email)
-            self.slug_field=f"{base_slug}_{self.pk}"
-            super().save( *args,**kwargs)
+            base_slug = slugify(self.name) if self.name else slugify(self.email)
+            base_slug =base_slug.lower()
+            num = 1
+            while CustomBaseUser.objects.filter(slug_field=base_slug).exists():
+                base_slug = f"{base_slug}{num}"
+                num += 1
+            self.slug_field = base_slug
+        super().save(*args, **kwargs)
             
             
-            
-            
-
 class Customer(models.Model):
     user = models.ForeignKey(CustomBaseUser, related_name="customers", on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
@@ -71,7 +72,7 @@ class ThreadsProducts(models.Model):
 
 
 class DesignImage(models.Model):
-    product_obj = models.ForeignKey('Designs', related_name='design_images', on_delete=models.CASCADE)
+    Design_obj = models.ForeignKey('Designs', related_name='design_images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='design_images', null=True, blank=True)
 
     def __str__(self):

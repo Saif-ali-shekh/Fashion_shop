@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+from datetime import datetime, timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z5yicv_ukgn)jq960y-ubs=k4m8n0uku=t50##=4-al$xan4vr'
+# SECRET_KEY = 'django-insecure-z5yicv_ukgn)jq960y-ubs=k4m8n0uku=t50##=4-al$xan4vr'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +41,7 @@ OTHER_APPS=[
 THIRD_PARTY_APPS=[
     'rest_framework',
     "graphene_django",
+    'rest_framework_simplejwt',
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -98,7 +103,8 @@ import os
 # }
 
 DATABASES = {
-"default": dj_database_url.parse(os. environ.get("DATABASE_URL"))
+# "default": dj_database_url.parse(os. environ.get("DATABASE_URL"))#before  making .env file
+'default': dj_database_url.parse(config('DATABASE_URL'))
 }
 AUTH_USER_MODEL = 'App_Models.CustomBaseUser' 
 
@@ -150,11 +156,19 @@ GRAPHENE = {
 }
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=360),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
 }
 
 import os
@@ -165,3 +179,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
